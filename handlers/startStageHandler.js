@@ -61,11 +61,19 @@ export default async function (bot, msg) {
                     await findUserHandler(bot, msg)
 
                 }
-                bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎',{
+                if(msg.text === '⚙️') {
+                    await UserService.updateUserByTelegramIdAsync({
+                        telegram_id: msg.from.id,
+                        stage: stages.age_input
+                    })
+                    bot.sendMessage(msg.from.id, 'Сколько вам лет?')
+                }
+                bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎 или ⚙️',{
                     reply_markup: JSON.stringify({
                         keyboard: [
                             ['👍'],
-                            ['👎']
+                            ['👎'],
+                            ['⚙️']
                         ]
                     })
                 })

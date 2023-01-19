@@ -1,6 +1,9 @@
 import mongoose from "mongoose"
 
-mongoose.connect('mongodb://localhost:27017/bot_node_telegram', {
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+mongoose.connect(process.env.MONGO_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
