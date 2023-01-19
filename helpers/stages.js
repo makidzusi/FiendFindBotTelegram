@@ -10,4 +10,5 @@ export default {
     gender_input: "gender_input",
     finished: "finished",
     name_input: "name_input",
+    review_profile: "review_profile",
 }

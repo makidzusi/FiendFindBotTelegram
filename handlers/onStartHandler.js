@@ -16,9 +16,11 @@ export default async function (bot, msg) {
     if (result === null) {
         bot.sendMessage(msg.chat.id, 'У вас уже есть профиль')
     } else {
+        console.log(msg.from)
         await UserService.updateUserByTelegramIdAsync({
             telegram_id: msg.from.id,
-            stage: stages.start
+            stage: stages.start,
+            t_username: msg.from.username,
         })
         bot.sendMessage(msg.chat.id, 'Привет, твой профиль в боте успешно создан, давай заполним его!', opts)
     }

@@ -1,5 +1,6 @@
 import UserService from "../services/UserService.js"
 import stages from '../helpers/stages.js'
+import findUserHandler from "./findUserHandler.js";
 
 export default async function (bot, msg) {
     const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
@@ -9,7 +10,7 @@ export default async function (bot, msg) {
             case stages.start:
                 UserService.updateUserByTelegramIdAsync({
                     telegram_id: msg.from.id,
-                    stage: stages.age_input
+                    stage: stages.age_input,
                 })
                 bot.sendMessage(msg.chat.id, 'Сколько вам лет?')
                 return
@@ -45,7 +46,45 @@ export default async function (bot, msg) {
                 bot.sendMessage(msg.chat.id, 'Прекрасно! Теперь отправь фото, которое будет использоваться в анкете')
                 return
             case stages.image_input:
-                bot.sendMessage(msg.chat.id, 'Твое сообщение должно быть картинкой!')
+                bot.sendMessage(msg.chat.id, 'Твое сообщение должно быть картинкой!');
+                return
+            case stages.review_profile:
+                if(msg.text === '👍') {
+                    bot.sendMessage(msg.chat.id, 'Вам нравится этот человек')
+                    const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
+                    const target_user = await UserService.getUserByIdAsync(user.current_viewed_profile)
+                    bot.sendMessage(target_user.telegram_id, `Вы получили лайк от пользователя: @${user.t_username}`)
+                    return
+                }
+                if(msg.text === '👎') {
+                    
+                    await findUserHandler(bot, msg)
+
+                }
+                bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎',{
+                    reply_markup: JSON.stringify({
+                        keyboard: [
+                            ['👍'],
+                            ['👎']
+                        ]
+                    })
+                })
+                return
+            case stages.finished:
+                const text = msg.text
+                if(text === '/find') {
+                    await UserService.updateUserByTelegramIdAsync({
+                        telegram_id: msg.from.id,
+                        stage: stages.review_profile
+                    })
+                    await findUserHandler(bot, msg)
+                    return
+                }
+                console.log(msg.from)
+                bot.sendMessage(msg.chat.id, 'Введите /find , чтобы начать поиск!')
+                return
+            default:
+                bot.sendMessage(msg.chat.id, 'Нет такого варианта!')
         }
     } else {
         bot.sendMessage(msg.chat.id, 'У вас не создан профиль! Напишите /start , чтобы начать')

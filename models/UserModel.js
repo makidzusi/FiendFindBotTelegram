@@ -10,6 +10,11 @@ const userSchema = new Schema({
     isActiveProfile: Boolean,
     image: String,
     stage: String,
+    t_username: String,
+    current_viewed_profile: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 });
 
 userSchema.index({name: 'text', 'description': 'text'});

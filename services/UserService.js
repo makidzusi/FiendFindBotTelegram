@@ -31,6 +31,8 @@ class UserService {
         name,
         age,
         stage,
+        t_username,
+        current_viewed_profile
     }) {
         const user = await UserModel.findOne({
             telegram_id: telegram_id
@@ -43,7 +45,9 @@ class UserService {
                 description: description,
                 name: name,
                 age: age,
-                stage
+                stage: stage,
+                t_username: t_username,
+                current_viewed_profile: current_viewed_profile
             }
         })
         return user
@@ -56,6 +60,9 @@ class UserService {
                 $ne: telegram_id
             }
         }).skip(random)
+    }
+    async getUserByIdAsync(id) {
+        return await UserModel.findById(id)
     }
 }
 
