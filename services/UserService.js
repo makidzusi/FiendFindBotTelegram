@@ -30,6 +30,7 @@ class UserService {
         description,
         name,
         age,
+        stage,
     }) {
         const user = await UserModel.findOne({
             telegram_id: telegram_id
@@ -42,6 +43,7 @@ class UserService {
                 description: description,
                 name: name,
                 age: age,
+                stage
             }
         })
         return user

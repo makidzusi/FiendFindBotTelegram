@@ -9,4 +9,5 @@ export default {
     preferred_gender_input: "preferred_gender_input",
     gender_input: "gender_input",
     finished: "finished",
+    name_input: "name_input",
 }
