@@ -12,6 +12,7 @@ const userSchema = new Schema({
     stage: String,
 });
 
+userSchema.index({name: 'text', 'description': 'text'});
 const UserModel = mongoose.model('User', userSchema);
 
 export default UserModel

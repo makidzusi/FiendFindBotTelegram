@@ -7,7 +7,7 @@ class UserService {
         })
         console.log(user)
 
-        if(user) return null
+        if (user) return null
 
         const new_user = await UserModel.create({
             telegram_id: telegram_id
@@ -47,6 +47,15 @@ class UserService {
             }
         })
         return user
+    }
+    async getRandomUserAsync(telegram_id) {
+        const count = await UserModel.count()
+        const random = Math.floor(Math.random() * count)
+        return await UserModel.findOne({
+            telegram_id: {
+                $ne: telegram_id
+            }
+        }).skip(random)
     }
 }
 
