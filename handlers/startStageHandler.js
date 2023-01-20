@@ -2,6 +2,7 @@ import UserService from "../services/UserService.js"
 import stages from '../helpers/stages.js'
 import findUserHandler from "./findUserHandler.js";
 import url from 'url';
+import client from '../elkclient/index.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -52,29 +53,29 @@ export default async function (bot, msg) {
                 bot.sendMessage(msg.chat.id, 'Твое сообщение должно быть картинкой!');
                 return
             case stages.review_profile:
-                if(msg.text === '👍') {
+                if (msg.text === '👍') {
                     bot.sendMessage(msg.chat.id, 'Вам нравится этот человек')
                     const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
                     const target_user = await UserService.getUserByIdAsync(user.current_viewed_profile)
                     const photo = `${__dirname}/../images/${user.image}`;
-                    bot.sendPhoto(target_user.telegram_id,photo, {
+                    bot.sendPhoto(target_user.telegram_id, photo, {
                         caption: `Вы получили лайк от пользователя: @${user.t_username}, Возраст ${user.age}, ${user.description}`
                     })
                     return
                 }
-                if(msg.text === '👎') {
-                    
+                if (msg.text === '👎') {
+
                     await findUserHandler(bot, msg)
 
                 }
-                if(msg.text === '⚙️') {
+                if (msg.text === '⚙️') {
                     await UserService.updateUserByTelegramIdAsync({
                         telegram_id: msg.from.id,
-                        stage: stages.age_input
+                        stage: stages.in_settings
                     })
                     bot.sendMessage(msg.from.id, 'Сколько вам лет?')
                 }
-                bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎 или ⚙️',{
+                bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎 или ⚙️', {
                     reply_markup: JSON.stringify({
                         keyboard: [
                             ['👍'],
@@ -84,17 +85,46 @@ export default async function (bot, msg) {
                     })
                 })
                 return
+            case stages.in_settings:
             case stages.finished:
+            
                 const text = msg.text
-                if(text === '/find') {
+                if (text === '/find') {
                     await UserService.updateUserByTelegramIdAsync({
                         telegram_id: msg.from.id,
                         stage: stages.review_profile
                     })
                     await findUserHandler(bot, msg)
-                    return
+
                 }
-                console.log(msg.from)
+                if (msg.text.substring(0, 5) === '/find') {
+        
+                    const userFromElk = await client.search({
+                        index: 'users',
+                        query: {
+                            match: {
+                                description: msg.text.substring(5)
+                            }
+                        }
+                    })
+                    const hits = userFromElk.hits.hits
+                    if (!hits.length) {
+                        bot.sendMessage(msg.from.id, 'Изивните, никого не нашлось, попробуйте еще!')
+                        return
+                    }
+                    const rand = Math.floor(Math.random() * hits.length)
+                    const user = hits[rand]
+                    console.log(user._source)
+                    
+                    const finded_user = await UserService.getUserByTelegramIdAsync(user._source.telegram_id)
+                    const photo = `${__dirname}/../images/${finded_user.image}`;
+                    bot.sendPhoto(msg.chat.id, photo, {
+                        caption: `${finded_user.name}, Вораст - ${finded_user.age}, Город - ${finded_user.city}, ${finded_user?.description || ''}, ссылка на профиль: @${finded_user?.t_username}`
+                    })
+                    console.log(userFromElk.hits)
+                }
+
+                return
                 bot.sendMessage(msg.chat.id, 'Введите /find , чтобы начать поиск!')
                 return
             default:

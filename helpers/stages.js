@@ -11,4 +11,5 @@ export default {
     finished: "finished",
     name_input: "name_input",
     review_profile: "review_profile",
+    in_settings: "in_settings",
 }

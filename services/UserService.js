@@ -1,12 +1,12 @@
 import UserModel from '../models/UserModel.js'
+import client from '../elkclient/index.js'
 
 class UserService {
     async createUser(telegram_id) {
         const user = await UserModel.findOne({
             telegram_id: telegram_id
         })
-        console.log(user)
-
+ 
         if (user) return null
 
         const new_user = await UserModel.create({
@@ -37,6 +37,16 @@ class UserService {
         const user = await UserModel.findOne({
             telegram_id: telegram_id
         })
+
+        if(description) {
+            await client.index({
+                index: 'users',
+                document: {
+                    telegram_id: telegram_id,
+                    description: description
+                }
+            })
+        }
 
         await user.update({
             $set: {

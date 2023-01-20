@@ -8,54 +8,38 @@ import UserModel from "./models/UserModel.js";
 import { faker } from '@faker-js/faker/locale/ru';
 import stages from "./helpers/stages.js";
 import findUserHandler from "./handlers/findUserHandler.js";
-import {Client} from '@elastic/elasticsearch'
+import client from './elkclient/index.js'
 
 dotenv.config()
-
-
-const client = new Client({
-    node: 'http://127.0.0.1:9200',
-})
-
-
-
-console.log(client)
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
     polling: true
 })
 
-bot.onText(/\add/, async (msg) => {
-    try {
-        await client.index({
-            index: 'users',
-            document: {
-                telegram_id: 1,
-                description: 'я люблю javascript прогаю, люблю аниме и геншин'
-            }
-        })
-        console.log('nice')
-    } catch(err) {
-        console.log(err)
-    }
-})
-
-bot.onText(/\/search/, async (msg) => {
-    try {
-        const r = await client.search({
-            index: 'users',
-            query: {
-                match: {
-                    description: 'аниме javascript'
+// bot.onText(/\/search\s(.+)/gm, async (msg) => {
+//     const value = msg.text.substring(8, msg.text.length)
+//     try {
+//         const r = await client.search({
+//             index: 'users',
+//             query: {
+//                 match: {
+//                     description: value
                     
-                }
-            }
-        })
-        console.log('nice',r, r.hits.hits)
-    } catch(err) {
-        console.log(err)
-    }
-})
+//                 }
+//             }
+//         })
+//         const hits = r.hits.hits
+//         if(!hits.length) {
+//             bot.sendMessage(msg.from.id, 'Изивните, никого не нашлось, попробуйте еще!')
+//             return
+//         }
+//         const rand = Math.floor(Math.random() * hits.length)
+//         bot.sendMessage(msg.from.id, JSON.stringify(hits[rand]))
+//         console.log('nice',r, r.hits.hits)
+//     } catch(err) {
+//         console.log(err)
+//     }
+// })
 
 bot.onText(/\/start/, async (msg) => {
     onStartHandler(bot, msg);
