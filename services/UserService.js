@@ -53,7 +53,7 @@ class UserService {
         return user
     }
     async getRandomUserAsync(telegram_id) {
-        const count = await UserModel.count()
+        const count = await UserModel.count() - 1
         const random = Math.floor(Math.random() * count)
         return await UserModel.findOne({
             telegram_id: {

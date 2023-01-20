@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "dependencies": {
+    "@elastic/elasticsearch": "^8.6.0",
     "dotenv": "^16.0.3",
     "mongoose": "^6.8.4",
     "node-telegram-bot-api": "^0.61.0",

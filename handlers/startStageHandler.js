@@ -1,6 +1,9 @@
 import UserService from "../services/UserService.js"
 import stages from '../helpers/stages.js'
 import findUserHandler from "./findUserHandler.js";
+import url from 'url';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export default async function (bot, msg) {
     const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
@@ -53,7 +56,10 @@ export default async function (bot, msg) {
                     bot.sendMessage(msg.chat.id, 'Вам нравится этот человек')
                     const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
                     const target_user = await UserService.getUserByIdAsync(user.current_viewed_profile)
-                    bot.sendMessage(target_user.telegram_id, `Вы получили лайк от пользователя: @${user.t_username}`)
+                    const photo = `${__dirname}/../images/${user.image}`;
+                    bot.sendPhoto(target_user.telegram_id,photo, {
+                        caption: `Вы получили лайк от пользователя: @${user.t_username}, Возраст ${user.age}, ${user.description}`
+                    })
                     return
                 }
                 if(msg.text === '👎') {
