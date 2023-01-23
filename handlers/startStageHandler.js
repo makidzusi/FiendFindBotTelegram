@@ -73,7 +73,17 @@ export default async function (bot, msg) {
                         telegram_id: msg.from.id,
                         stage: stages.in_settings
                     })
-                    bot.sendMessage(msg.from.id, 'Сколько вам лет?')
+                    bot.sendMessage(msg.chat.id, 'Доступные команды: /continue для продлжения поиска, /startfind для поиска по описанию или /editprofile для редактирования профиля', {
+                        reply_markup: JSON.stringify({
+                            keyboard: [
+                                ['/continue'],
+                                ['/startfind'],
+                                ['/editprofile']
+                            ]
+                        })
+                    })
+                    return
+                    //bot.sendMessage(msg.from.id, 'Сколько вам лет?')
                 }
                 bot.sendMessage(msg.chat.id, 'Доступные комманды для ввода: 👍 или 👎 или ⚙️', {
                     reply_markup: JSON.stringify({
@@ -87,7 +97,7 @@ export default async function (bot, msg) {
                 return
             case stages.in_settings:
             case stages.finished:
-            
+
                 const text = msg.text
                 if (text === '/find') {
                     await UserService.updateUserByTelegramIdAsync({
@@ -98,7 +108,7 @@ export default async function (bot, msg) {
 
                 }
                 if (msg.text.substring(0, 5) === '/find') {
-        
+
                     const userFromElk = await client.search({
                         index: 'users',
                         query: {
@@ -115,7 +125,7 @@ export default async function (bot, msg) {
                     const rand = Math.floor(Math.random() * hits.length)
                     const user = hits[rand]
                     console.log(user._source)
-                    
+
                     const finded_user = await UserService.getUserByTelegramIdAsync(user._source.telegram_id)
                     const photo = `${__dirname}/../images/${finded_user.image}`;
                     bot.sendPhoto(msg.chat.id, photo, {

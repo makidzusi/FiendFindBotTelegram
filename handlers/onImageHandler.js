@@ -25,13 +25,21 @@ export default async function (bot, msg) {
             await UserService.updateUserByTelegramIdAsync({
                 telegram_id: msg.from.id,
                 image: `${msg.from.id}${extName}`,
-                stage: stages.finished
+                stage: stages.in_settings
             })
             const photo = `${__dirname}/../images/${user.image}`;
             bot.sendPhoto(msg.chat.id, photo, {
                 caption: `${user.name}, Возраст - ${user.age}, ${user.description}`
             })
-            bot.sendMessage(msg.chat.id, 'Поздравляем! Вы успешно заполнили профиль, напишите /find , чтобы начать подбор')
+            bot.sendMessage(msg.chat.id, 'Поздравляем! Вы успешно заполнили профиль, напишите /find , чтобы начать подбор', {
+                reply_markup: JSON.stringify({
+                    keyboard: [
+                        ['/find'],
+                        ['/editprofile'],
+                        ['/showme']
+                    ]
+                })
+            })
         });
     }).on("error", (err) => {
         bot.sendMessage(msg.chat.id, 'Не удалось установить картинку, попробуйте еще раз!')

@@ -11,6 +11,10 @@ const userSchema = new Schema({
     image: String,
     stage: String,
     t_username: String,
+    waitingForReview: {
+        type: Schema.Types.Array,
+        ref: 'User'
+    },
     current_viewed_profile: {
         type: Schema.Types.ObjectId,
         ref: 'User'
