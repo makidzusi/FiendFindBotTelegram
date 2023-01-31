@@ -11,11 +11,10 @@
 
 - editable profiles
 - like system
-
-## ToDo:
 - full text search with elasticsearch
+## ToDo:
+
 - refactoring
-- docker compose integration
 
 ## How to run dev:
 

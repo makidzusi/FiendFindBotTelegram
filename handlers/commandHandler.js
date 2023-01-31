@@ -5,6 +5,7 @@ import nameInputHandler from "../stage_handlers/nameInputHandler.js"
 import startStageHandler from "../stage_handlers/startStageHandler.js"
 import descInputHandler from "../stage_handlers/descInputHandler.js"
 import inSettingsHandler from "../stage_handlers/inSettingsHandler.js"
+import reviewHandler from "../stage_handlers/reviewHandler.js"
 
 export default async function (bot, msg) {
     const user = await UserService.getUserByTelegramIdAsync(msg.from.id)
@@ -24,6 +25,9 @@ export default async function (bot, msg) {
             return
         case stages.in_settings:
             inSettingsHandler(bot, msg)
+            return
+        case stages.review_profile:
+            reviewHandler(bot,msg)
             return
     }
 
